@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
+---
 
 {% import_yaml "salt/ospyvermap.yaml" as ospyvermap %}
 {% set ospyver = salt['grains.filter_by'](ospyvermap, grain='os_family') or {} %}
@@ -13,9 +14,16 @@
 {% set os_lower =  salt['grains.get']('os')|lower %}
 {% set osmajorrelease = salt['grains.get']('osmajorrelease', osrelease)|string %}
 {% set oscodename = salt['grains.get']('oscodename') %}
+{% set os_family_lower =  salt['grains.get']('os_family')|lower %}
 
 Fedora:
   pygit2: python2-pygit2
+
+Amazon:
+  pkgrepo_name: saltstack-amzn-repo
+  pkgrepo_humanname: SaltStack repo for Amazon Linux 2
+  pkgrepo: 'https://repo.saltstack.com/yum/amazon/2/$basearch/{{ salt_release }}'
+  key_url: 'https://repo.saltstack.com/yum/amazon/2/$basearch/{{ salt_release }}/SALTSTACK-GPG-KEY.pub'
 
 Ubuntu:
   pkgrepo: 'deb http://repo.saltstack.com/{{ py_ver_dir }}/{{ os_lower }}/{{ osrelease }}/amd64/{{ salt_release }} {{ oscodename }} main'
@@ -23,14 +31,14 @@ Ubuntu:
   pygit2: python-pygit2
   gitfs:
     pygit2:
-      install_from_source: False
+      install_from_source: false
       git:
-        require_state: False
+        require_state: false
         install_from_package: Null
 
 Raspbian:
-  pkgrepo: 'deb http://repo.saltstack.com/{{ py_ver_dir }}/{{ os_lower }}/{{ osmajorrelease }}/armhf/{{ salt_release }} {{ oscodename }} main'
-  key_url: 'https://repo.saltstack.com/{{ py_ver_dir }}/{{ os_lower }}/{{ osmajorrelease }}/armhf/{{ salt_release }}/SALTSTACK-GPG-KEY.pub'
+  pkgrepo: 'deb http://repo.saltstack.com/{{ py_ver_dir }}/{{ os_family_lower }}/{{ osmajorrelease }}/armhf/{{ salt_release }} {{ oscodename }} main'
+  key_url: 'https://repo.saltstack.com/{{ py_ver_dir }}/{{ os_family_lower }}/{{ osmajorrelease }}/armhf/{{ salt_release }}/SALTSTACK-GPG-KEY.pub'
 
 SmartOS:
   salt_master: salt
@@ -45,7 +53,7 @@ SmartOS:
   python_dulwich: 'py27-dulwich'
   gitfs:
     dulwich:
-      install_from_source: False
+      install_from_source: false
   config_path: /opt/local/etc/salt
   master:
     gitfs_provider: dulwich
